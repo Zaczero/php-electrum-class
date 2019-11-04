@@ -158,7 +158,7 @@ Broadcasts the hex-encoded transaction to the network.
   * $fee_level - transaction priority *(range from 0.0 to 1.0)*
   * return - sat/byte fee rate
 
-Returns recommended sat/byte fee rate for chosen priority. $fee_level = 0 means that you don't care when the transaction will be going through. You just want to save as much as possible on the fee. $fee_level = 1 means that you want to process the transaction as fast as possible.
+Returns recommended sat/byte fee rate for chosen priority. $fee_level = 0 means that you don't care when the transaction will be going through. You just want to save as much as possible on the fee. $fee_level = 1 means that you want to process the transaction as soon as possible.
 
 ---
 
@@ -169,14 +169,15 @@ Generates a new receiving address.
 
 ---
 
-* **getbalance() : float**
+* **getbalance(bool $confirmed_only = false) : float**
+  * $confirmed_only - include only confirmed transactions
   * return - confirmed account balance
 
-This one is obvious.
+This one is obvious. However please keep in mind that if you decide to include only confirmed transactions even if you send some amount from the wallet you will not see a change until the outgoing transaction gets confirmed.
 
 ---
 
-* **history(int $min_confirmations = 1, int $from_height = 1, &$last_height = null) : array**
+* **history(int $min_confirmations = 1, int $from_height = 1, &$last_height) : array**
   * $min_confirmations - only include transaction with X confirmations or above
   * $from_height - only include transaction from block X or above
   * &$last_height - returns lastly processed block height

@@ -60,12 +60,15 @@ class Electrum {
 		return $response;
 	}
 
-	public function getbalance() : float {
+	public function getbalance(bool $confirmed_only = false) : float {
 		$response = $this->curl("getbalance", []);
 
-		if (!key_exists("confirmed", $response)) return 0;
+		$total = 0.0;
 
-		return $response["confirmed"];
+		if (!$confirmed_only && key_exists("unconfirmed", $response)) $total += $response["unconfirmed"];
+		if (key_exists("confirmed", $response)) $total += $response["confirmed"];
+
+		return $total;
 	}
 
 	public function getfeerate(float $fee_level = 0.5) : float {
@@ -78,7 +81,7 @@ class Electrum {
 		return floatval($response) / 1000;
 	}
 
-	public function history(int $min_confirmations = 1, int $from_height = 1, &$last_height = null) : array {
+	public function history(int $min_confirmations = 1, int $from_height = 1, &$last_height) : array {
 		$result = [];
 		$response = json_decode($this->curl("history", [
 			"show_addresses" => true,
@@ -86,8 +89,6 @@ class Electrum {
 			"show_fees" => true,
 			"from_height" => $from_height,
 		]), true);
-
-		$last_height = $from_height;
 
 		foreach ($response["transactions"] as $transaction) {
 			if ($transaction["incoming"] !== true || $transaction["height"] === 0) continue;
