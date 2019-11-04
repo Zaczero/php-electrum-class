@@ -3,7 +3,7 @@
 ![release](https://img.shields.io/github/release/Zaczero/php-electrum-class.svg)
 ![license](https://img.shields.io/github/license/Zaczero/php-electrum-class.svg)
 
-A simple but powerful Electrum class for PHP which allows you to receive crypto payments without any 3rd party integrations. Works with Linux, Windows and OSX. Latest SegWit format is supported as well.
+A simple, yet powerful Electrum class for PHP which allows you to receive crypto payments without any 3rd party integrations. Works with Linux, Windows and OSX. Latest SegWit format is supported as well.
 
 ## 🏁 Getting started
 
@@ -130,11 +130,35 @@ var_dump($electrum->getbalance());
 
 ### 📚 Class documentation
 
+* **btc2sat(float $btc) : float**
+  * $btc - bitcoin value
+  * return - satoshi value
+
+Converts bitcoin to satoshi unit.
+
+---
+
+* **sat2btc(float $sat) : float**
+  * $sat - satoshi value
+  * return - bitcoin value
+
+Converts satoshi to bitcoin unit.
+
+---
+
 * **broadcast(string $tx) : string**
   * $tx - hex-encoded transaction
   * return - transaction hash (txid)
 
 Broadcasts the hex-encoded transaction to the network.
+
+---
+
+* **getfeerate(float $fee_level = 0.5) : string**
+  * $fee_level - transaction priority *(range from 0.0 to 1.0)*
+  * return - sat/byte fee rate
+
+Returns recommended sat/byte fee rate for chosen priority. $fee_level = 0 means that you don't care when the transaction will be going through. You just want to save as much as possible on the fee. $fee_level = 1 means that you want to process the transaction as fast as possible.
 
 ---
 
@@ -170,17 +194,19 @@ Checks if provided address is owned by the local wallet.
 
 ---
 
-* **payto(string $destination, float $amount) : string**
+* **payto(string $destination, float $amount, float $amount_fee = 0.0) : string**
   * $destination - destination address to send to
-  * $amount - amount to send to
+  * $amount - amount to send in bitcoin unit
+  * $amount_fee - fee amount in bitcoin unit *(0 is dynamic)*
   * return - hex-encoded transaction ready to broadcast
 
 Generates and signs a new transaction with provided parameters.
 
 ---
 
-* **payto_max(string $destination) : string**
+* **payto_max(string $destination, float $amount_fee = 0.0) : string**
   * $destination - destination address to send to
+  * $amount_fee - fee amount in bitcoin unit *(0 is dynamic)*
   * return - hex-encoded transaction ready to broadcast
 
 Generates and signs a new transaction with provided parameters. Sends all funds which are available.
@@ -195,7 +221,7 @@ Checks if provided address is valid or not.
 
 ## 🏫 Example usage
 
-### Creating a new payment
+### Creating a new receiving address
 
 ```php
 require_once "electrum.php";
@@ -263,7 +289,7 @@ foreach ($electrum->history(
 db_save($last_height);
 ```
 
-### Withdraw
+### Sending all funds to selected address
 
 ```php
 require_once "electrum.php";
@@ -273,11 +299,40 @@ $rpcpass = "CHANGE_ME_PASSWORD";
 
 $electrum = new Electrum($rpcuser, $rpcpass);
 
-// send all available funds
+// generate transaction for sending all available funds
 $tx = $electrum->payto_max("BTC_ADDRESS");
+// and broadcast it to the network
 $txid = $electrum->broadcast($tx);
 
-// browse the transaction on blockchair
+// browse the transaction on blockchair.com
+$redirect_url = "https://blockchair.com/bitcoin/transaction/".$txid;
+header("Location: ".$redirect_url);
+```
+
+### Sending funds to selected address with custom fee
+
+```php
+require_once "electrum.php";
+
+$rpcuser = "user";
+$rpcpass = "CHANGE_ME_PASSWORD";
+
+$electrum = new Electrum($rpcuser, $rpcpass);
+
+// get current fee rate as sat/byte
+$fee_rate = $electrum->getfeerate(0.3);
+// generate a temporary transaction to estaminate the size
+// we don't broadcast it, just use for calculations
+$tx_tmp = $electrum->payto("BTC_ADDRESS", 0.2);
+// calculate a fee rate in bitcoin for given transaction
+// we divide by two because tx is hex-encoded this means 2 chars = 1 byte
+$fee = $electrum->sat2btc($fee_rate * strlen($tx_tmp) / 2);
+
+// send 0.2 BTC and include the bitcoin fee as a third parameter
+$tx = $electrum->payto("BTC_ADDRESS", 0.2, $fee);
+$txid = $electrum->broadcast($tx);
+
+// browse the transaction on blockchair.com
 $redirect_url = "https://blockchair.com/bitcoin/transaction/".$txid;
 header("Location: ".$redirect_url);
 ```

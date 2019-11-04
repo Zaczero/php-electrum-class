@@ -38,6 +38,14 @@ class Electrum {
 		return json_decode($response, true)["result"];
 	}
 
+	public static function btc2sat(float $btc) : float {
+		return $btc * 100000000;
+	}
+
+	public static function sat2btc(float $sat) : float {
+		return $sat / 100000000;
+	}
+
 	public function broadcast(string $tx) : string {
 		$response = $this->curl("broadcast", [
 			"tx" => $tx,
@@ -58,6 +66,16 @@ class Electrum {
 		if (!key_exists("confirmed", $response)) return 0;
 
 		return $response["confirmed"];
+	}
+
+	public function getfeerate(float $fee_level = 0.5) : float {
+		if ($fee_level < 0.0 || $fee_level > 1.0) throw new Exception("fee_level must be between 0.0 and 1.0");
+
+		$response = $this->curl("getfeerate", [
+			"fee_level" => $fee_level,
+		]);
+
+		return floatval($response) / 1000;
 	}
 
 	public function history(int $min_confirmations = 1, int $from_height = 1, &$last_height = null) : array {
@@ -93,22 +111,37 @@ class Electrum {
 		return $response;
 	}
 
-	public function payto(string $destination, float $amount) : string {
+	public function payto(string $destination, float $amount, float $amount_fee = 0.0) : string {
 		if ($amount <= 0) return "";
+		if ($amount_fee >= 0.01) return "";
 
-		$response = $this->curl("payto", [
+		$param = [
 			"destination" => $destination,
 			"amount" => $amount,
-		]);
+		];
+
+		if ($amount_fee > 0.0) {
+			$param["fee"] = $amount_fee;
+		}
+
+		$response = $this->curl("payto", $param);
 
 		return $response["hex"];
 	}
 
-	public function payto_max(string $destination) : string {
-		$response = $this->curl("payto", [
+	public function payto_max(string $destination, float $amount_fee = 0.0) : string {
+		if ($amount_fee >= 0.01) return "";
+
+		$param = [
 			"destination" => $destination,
 			"amount" => "!",
-		]);
+		];
+
+		if ($amount_fee > 0.0) {
+			$param["fee"] = $amount_fee;
+		}
+
+		$response = $this->curl("payto", $param);
 
 		return $response["hex"];
 	}
