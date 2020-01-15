@@ -162,9 +162,16 @@ class Electrum {
 			if ($transaction["incoming"] !== true || $transaction["height"] === 0) continue;
 			if ($transaction["confirmations"] < $min_confirmations) break;
 
-			foreach ($transaction["outputs"] as $output)
-				if ($this->ismine($output["address"]))
-					$result[$output["address"]] += floatval($output["value"]);
+			foreach ($transaction["outputs"] as $output) {
+				if ($this->ismine($output["address"])) {
+					if (key_exists($output["address"], $result)) {
+						$result[$output["address"]] += floatval($output["value"]);
+					}
+					else {
+						$result[$output["address"]] = floatval($output["value"]);
+					}
+				}
+			}
 
 			$last_height = $transaction["height"];
 		}
