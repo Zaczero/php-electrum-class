@@ -1,0 +1,29 @@
+{
+    "name": "zaczero/php-electrum-class",
+    "description": "Accept Bitcoin payments with no third-party/KYC",
+    "type": "library",
+    "keywords": [
+        "bitcoin",
+        "btc",
+        "electrum",
+        "cryptocurrency",
+        "payments",
+        "first-party",
+        "no-kyc",
+        "open-source"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kamil Monicz",
+            "email": "kamil@monicz.pl",
+            "role": "Developer"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "files": [
+            "electrum.php"
+        ]
+    }
+}

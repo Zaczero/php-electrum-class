@@ -344,11 +344,6 @@ header("Location: ".$redirect_url);
 
 * Email: [kamil@monicz.pl](mailto:kamil@monicz.pl)
 
-### ☕ Support me
-
-* Bitcoin: `35n1y9iHePKsVTobs4FJEkbfnBg2NtVbJW`
-* Ethereum: `0xc69C7FC9Ce691c95f38798506EfdBB8d14005B67`
-
-### 📃 License
+### 📃 Licenses
 
 * [Zaczero/php-electrum-class](https://github.com/Zaczero/php-electrum-class/blob/master/LICENSE)
