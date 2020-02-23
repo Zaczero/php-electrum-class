@@ -3,7 +3,19 @@
 ![release](https://img.shields.io/github/release/Zaczero/php-electrum-class.svg)
 ![license](https://img.shields.io/github/license/Zaczero/php-electrum-class.svg)
 
-A simple, yet powerful Electrum class for PHP which allows you to receive crypto payments without any 3rd party integrations. Works with Linux, Windows and OSX. Latest SegWit format is supported as well.
+A simple, yet powerful Electrum class for PHP which allows you to receive cryptocurrency payments without any third party integrations nor KYC verification. Works with Linux, Windows and OSX installations. Latest SegWit address format is supported as well.
+
+## 🌤️ Installation
+
+### Install with composer (recommended)
+
+`composer require zaczero/php-electrum-class`
+
+*[Get composer here - getcomposer.org](https://getcomposer.org)*
+
+### Install manually
+
+[Browse latest GitHub release](https://github.com/Zaczero/php-electrum-class/releases/latest)
 
 ## 🏁 Getting started
 
@@ -224,6 +236,8 @@ Checks if provided address is valid or not.
 
 ### Creating a new receiving address
 
+Simply use a createnewaddress() function to generate the address and save it in the database alongside with the payment amount and the customer ID for later processing. A new address shall be generated for each payment request.
+
 ```php
 require_once "electrum.php";
 
@@ -241,6 +255,10 @@ render_view();
 ```
 
 ### Processing payments (cron task)
+
+Iterate through receive_address->amount dictionary returned by history() function which contains all newly received payments. Then fetch the payment data by querying the database provided the receive_address. Add the amount to total received and then finalize the payment if total received is greater or equal than the required amount.
+
+Finally remember to save the $last_height returned by history() function so we don't process the same block twice or more. Please note that if there are no transactions returned then the $last_height will remain the same as provided initially.
 
 ```php
 require_once "electrum.php";
@@ -320,7 +338,8 @@ $rpcpass = "CHANGE_ME_PASSWORD";
 
 $electrum = new Electrum($rpcuser, $rpcpass);
 
-// get current fee rate as sat/byte
+// get recommended fee rate as sat/byte
+// you can hard-code this value (eg. 1 will be 1 sat/byte)
 $fee_rate = $electrum->getfeerate(0.3);
 // generate a temporary transaction to estaminate the size
 // we don't broadcast it, just use for calculations
@@ -344,6 +363,6 @@ header("Location: ".$redirect_url);
 
 * Email: [kamil@monicz.pl](mailto:kamil@monicz.pl)
 
-### 📃 Licenses
+### 📃 License
 
 * [Zaczero/php-electrum-class](https://github.com/Zaczero/php-electrum-class/blob/master/LICENSE)
