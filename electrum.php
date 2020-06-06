@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * Electrum Wrapper.
+ */
 class Electrum {
 
 	private $_rpcurl;
@@ -101,6 +105,88 @@ class Electrum {
 	 */
 	public function createnewaddress() : string {
 		$response = $this->curl("createnewaddress", []);
+
+		return $response;
+	}
+
+	/**
+	 * Gives a JSON array of all current addresses.
+	 * 
+	 * @return array List of addresses
+	 */
+	public function listaddresses() : array {
+		$response = $this->curl("listaddresses", []);
+
+		return $response;
+	}
+
+	/**
+	 * Gives a specified address balance.
+	 * 
+	 * @param string $address to get balance
+	 * @param bool $confirmed_only only show confirmed BTC
+	 * 
+	 * @return float Address balance
+	 */
+	public function getaddressbalance(string $address, bool $confirmed_only = false) : float {
+		$response = $this->curl("getaddressbalance", ["address"=>$address]);
+		
+		$total = 0.0;
+
+		if (!$confirmed_only && key_exists("unconfirmed", $response)) $total += $response["unconfirmed"];
+		if (key_exists("confirmed", $response)) $total += $response["confirmed"];
+
+		return $total;
+	}
+
+	/**
+	 * Gives the history of a specified address.
+	 * 
+	 * @param string $address to get the history
+	 * 
+	 * @return array List of address history
+	 */
+	public function getaddresshistory(string $address) : array {
+		$response = $this->curl("getaddresshistory", ["address"=>$address]);
+
+		return $response;
+	}
+
+	/**
+	 * Freezes a specified address from recieving or sending BTC.rotating
+	 * 
+	 * @param string $address Address to freeze
+	 * 
+	 * @return bool true or false
+	 */
+	public function freeze(string $address) : bool {
+		$response = $this->curl("freeze", ["address"=>$address]);
+
+		return $response;
+	}
+
+	/**
+	 * unFreezes a specified address.
+	 * 
+	 * @param string $address Address to unfreeze
+	 * 
+	 * @return bool true or false
+	 */
+	public function unfreeze(string $address) : bool {
+		$response = $this->curl("unfreeze", ["address"=>$address]);
+
+		return $response;
+	}
+
+	/**
+	 * Gives the unspent BTC in a specified address.
+	 * 
+	 * @param string $address Address to get unspent
+	 * 
+	 * @return array List of unspenct BTC.
+	 */
+	public function getaddressunspent(string $address) : array {
+		$response = $this->curl("getaddressunspent", ["address"=>$address]);
 
 		return $response;
 	}
@@ -247,6 +333,23 @@ class Electrum {
 	}
 
 	/**
+	 * Notifys a url when a address gets a new transaction
+	 * 
+	 * @param string $address Address used to for notifcation
+	 * @param string $url url used for notification
+	 * 
+	 * @return bool true or false
+	 */
+	public function notify(string $address, string $url) : bool {
+		$response = $this->curl("notify", [
+			"address" => $address,
+			"url" => $url
+		]);
+
+		return $response;
+	}
+
+	/**
 	 * Checks if provided address is valid or not.
 	 *
 	 * @param string $address Address to validate
@@ -257,6 +360,8 @@ class Electrum {
 		$response = $this->curl("validateaddress", [
 			"address" => $address,
 		]);
+		
+		echo $response;
 
 		return $response;
 	}
