@@ -28,13 +28,13 @@ Let's start with setting up an electrum installation on your machine. Please fol
 sudo apt install python3-pyqt5 libsecp256k1-0 python3-cryptography
 
 # Download package
-wget https://download.electrum.org/4.0.2/Electrum-4.0.2.tar.gz
+wget https://download.electrum.org/3.3.8/Electrum-3.3.8.tar.gz
 
 # Extract package
-tar -xvf Electrum-4.0.2.tar.gz
+tar -xvf Electrum-3.3.8.tar.gz
 
 # Install electrum command
-sudo ln -s $(pwd)/Electrum-4.0.2/run_electrum /usr/bin/electrum
+sudo ln -s $(pwd)/Electrum-3.3.8/run_electrum /usr/bin/electrum
 
 # Check if everything works properly
 electrum help
