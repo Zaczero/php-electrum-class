@@ -357,6 +357,94 @@ $redirect_url = "https://blockchair.com/bitcoin/transaction/".$txid;
 header("Location: ".$redirect_url);
 ```
 
+### Listing Addresses
+
+```php
+require_once "electrum.php";
+
+$rpcuser = "user";
+$rpcpass = "CHANGE_ME_PASSWORD";
+
+$electrum = new Electrum($rpcuser, $rpcpass);
+
+vardump($electrum->listaddresses());
+```
+
+### Getting address balance
+
+```php
+require_once "electrum.php";
+
+$rpcuser = "user";
+$rpcpass = "CHANGE_ME_PASSWORD";
+
+$electrum = new Electrum($rpcuser, $rpcpass);
+
+vardump($electrum->getaddressbalance("BTC ADDRESS"));
+```
+
+### Getting address history
+
+```php
+require_once "electrum.php";
+
+$rpcuser = "user";
+$rpcpass = "CHANGE_ME_PASSWORD";
+
+$electrum = new Electrum($rpcuser, $rpcpass);
+
+vardump($electrum->getaddresshistory("BTC ADDRESS"));
+```
+
+### Freeze a address
+
+```php
+require_once "electrum.php";
+
+$rpcuser = "user";
+$rpcpass = "CHANGE_ME_PASSWORD";
+
+$electrum = new Electrum($rpcuser, $rpcpass);
+$electrum->freeze("BTC ADDRESS");
+```
+
+### unFreeze a address
+```php
+require_once "electrum.php";
+
+$rpcuser = "user";
+$rpcpass = "CHANGE_ME_PASSWORD";
+
+$electrum = new Electrum($rpcuser, $rpcpass);
+$electrum->unfreeze("BTC ADDRESS");
+```
+
+### Get the unspent BTC on a adress
+
+```php
+require_once "electrum.php";
+
+$rpcuser = "user";
+$rpcpass = "CHANGE_ME_PASSWORD";
+
+$electrum = new Electrum($rpcuser, $rpcpass);
+
+vardump($electrum->getaddressunspent("BTC ADDRESS"));
+```
+
+### Notify when a adress gets a transaction
+
+```php
+require_once "electrum.php";
+
+$rpcuser = "user";
+$rpcpass = "CHANGE_ME_PASSWORD";
+
+$electrum = new Electrum($rpcuser, $rpcpass);
+
+$electrum->notify("BTC ADDRESS", "notification url");
+```
+
 ## Footer
 
 ### 📧 Contact

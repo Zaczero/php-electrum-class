@@ -18,6 +18,11 @@
             "name": "Kamil Monicz",
             "email": "kamil@monicz.pl",
             "role": "Developer"
+        },
+        {
+            "name": "Brennan",
+            "email": "null@dashnullify.pw",
+            "role": "Developer"
         }
     ],
     "require": {},
